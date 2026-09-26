@@ -1,0 +1,11 @@
+#pydantic 
+steps for the structured prompt
+
+1. Define the data model using Pydantic classes.
+2. Create a prompt template that specifies the desired output format (e.g., JSON, bullet points).
+3. Use the Pydantic model to validate and parse the output from the language model.
+4. Integrate the structured prompt into your application or workflow.
+
+schema :it is like the blueprint of the data model. It defines the structure, types, and constraints of the data that the model expects.
+
+#pydantic is a Python library that provides data validation and settings management using Python type hints.
