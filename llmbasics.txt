@@ -1,0 +1,61 @@
+what is llm ?
+large=it is trained on a huge amount of text data
+language->it understands and generates the human language
+Model->it is deep learning system(a neural network) that learns patterns from data
+
+
+some popular LLM'some
+gpt models,claude,gemini,Mistral etc
+hugging face , mistral free
+
+
+#langchain is the solution of the problem because every llm has diffenrent sdk
+
+Components of the langchain
+1. Models
+2. Prompts
+3. Chains
+4. Memory 
+5. Indexes
+6. Agents
+
+Models are the core intelligence layer .They generate text ,embedding,or
+other outputs.
+They connect your  application to LLM providers like:
+.OpenAI
+.Google Deepmind
+
+Types:
+1. Chat/language Models ->generate text ,answers questions
+2. Embedding models -> COnvert text into numbers(vectors) , used in search and RAG
+3. Multimodal models ->work with more than just text
+
+____PROMPTS:
+A prompt is the instruction we give to a language model
+Better prompt ->better result
+Types:
+simple prompt , system + user prompt ,Promps templates, Structured prompts
+
+structured prompt is used when we want json output, Bullet points ,fixed format
+
+
+=======Chains===
+A chain is a sequence of steps connected together.
+Real AI applications are not one step.
+
+====Memory ===
+Memory allows  the ai system to remember past interactions without memory :every message
+is treated independently.
+
+======Indexes====
+Indexes allows us  to connect external data to an LLM.
+LLMs only know what they were trained on.
+Indexes help them use : PDFs ,documents ,databases, company data
+
+
+====Agents ==
+Agents are the ai system that can decide what action to take.
+
+
+
+//uv is a fast python package , create the virtual environment so that all the installation remains in the folder not affect the system
