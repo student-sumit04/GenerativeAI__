@@ -1,11 +1,145 @@
-#pydantic 
-steps for the structured prompt
+# Structured Prompts with Pydantic
 
-1. Define the data model using Pydantic classes.
-2. Create a prompt template that specifies the desired output format (e.g., JSON, bullet points).
-3. Use the Pydantic model to validate and parse the output from the language model.
-4. Integrate the structured prompt into your application or workflow.
+## What is a structured prompt?
 
-schema :it is like the blueprint of the data model. It defines the structure, types, and constraints of the data that the model expects.
+A normal language-model response is free-form text. A **structured prompt** asks the
+model to return data in a predictable shape, such as a JSON object with specific
+fields. This makes the response easier and safer to use in an application.
 
-#pydantic is a Python library that provides data validation and settings management using Python type hints.
+For example, instead of asking for a movie recommendation and receiving a paragraph,
+we can request this structure:
+
+```json
+{
+  "title": "Inception",
+  "year": 2010,
+  "reason": "A complex science-fiction thriller."
+}
+```
+
+## Why use Pydantic?
+
+Pydantic is a Python library that validates data using Python type hints. A Pydantic
+class acts as a **schema**, which is the blueprint for the expected data. The schema
+defines:
+
+- field names
+- field types
+- required and optional values
+- validation rules and constraints
+
+If the model returns invalid data, Pydantic reports the validation error instead of
+allowing unexpected data to continue through the application.
+
+## Structured-prompt workflow
+
+1. Define the expected output with a Pydantic model.
+2. Create a `PydanticOutputParser` using that model.
+3. Add the parser's formatting instructions to the prompt.
+4. Send the prompt to the language model.
+5. Parse and validate the model response.
+6. Use the validated Python object in the application.
+
+## Complete LangChain example
+
+```python
+from dotenv import load_dotenv
+from pydantic import BaseModel, Field
+from langchain_core.output_parsers import PydanticOutputParser
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_mistralai import ChatMistralAI
+
+load_dotenv()
+
+
+class MovieRecommendation(BaseModel):
+	title: str = Field(description="The movie title")
+	year: int = Field(description="The movie release year")
+	reason: str = Field(description="Why the movie is recommended")
+
+
+parser = PydanticOutputParser(pydantic_object=MovieRecommendation)
+
+prompt = ChatPromptTemplate.from_messages([
+	(
+		"system",
+		"You are a helpful movie recommendation assistant.\n"
+		"{format_instructions}",
+	),
+	("human", "Recommend a movie about {topic}.")
+]).partial(format_instructions=parser.get_format_instructions())
+
+model = ChatMistralAI(model="mistral-large-latest")
+chain = prompt | model | parser
+
+recommendation = chain.invoke({"topic": "artificial intelligence"})
+
+print(recommendation.title)
+print(recommendation.year)
+print(recommendation.reason)
+```
+
+## Important components
+
+### Pydantic model
+
+```python
+class MovieRecommendation(BaseModel):
+	title: str
+	year: int
+	reason: str
+```
+
+This tells Pydantic that `title` and `reason` must be strings, while `year` must be
+an integer.
+
+### Output parser
+
+```python
+parser = PydanticOutputParser(pydantic_object=MovieRecommendation)
+```
+
+The parser converts the language model's response into a validated
+`MovieRecommendation` object.
+
+### Format instructions
+
+```python
+parser.get_format_instructions()
+```
+
+This generates instructions that tell the model how to format its response. Including
+these instructions in the prompt improves the chance of receiving valid structured
+output.
+
+### Runnable chain
+
+```python
+chain = prompt | model | parser
+```
+
+The pipe operator connects the steps:
+
+```text
+input values -> prompt -> language model -> Pydantic parser -> validated object
+```
+
+## Pydantic validation example
+
+```python
+from pydantic import BaseModel, Field
+
+
+class Review(BaseModel):
+	rating: int = Field(ge=1, le=5)
+	summary: str
+```
+
+Here, `rating` must be an integer between 1 and 5. A value such as `rating=8` fails
+validation because it violates the schema constraint.
+
+## Key idea
+
+The language model generates the data, but Pydantic checks the data. The model is
+probabilistic; the schema and parser provide a reliable contract for the rest of the
+application.
