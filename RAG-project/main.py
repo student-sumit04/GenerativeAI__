@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 from langchain_mistralai import ChatMistralAI
-from langchain_community.document_loaders import PyPDFLoader
+from langchain_community.document_loaders import PyPDFLoader  # type: ignore[import-not-found]
 from langchain_core.prompts import ChatPromptTemplate
 
 load_dotenv()
