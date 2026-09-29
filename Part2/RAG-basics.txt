@@ -1,0 +1,16 @@
+#learning through projects
+#step1 :
+student will updload pdf ,research papers and study materials
+
+step2:document loading
+step3:text splitting(chunking)
+
+step4:Embedding generation:each chunk is converted into a vector embedding
+step5:vector database storage :all embedding are stored inside a vector database
+
+step6:User asks a question(interaction of user with the system)
+step 7:query embedding 
+step 8:Similarity search
+step 9:Retriever Component
+
+step10: LLm answers
