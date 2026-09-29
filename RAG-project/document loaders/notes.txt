@@ -118,3 +118,8 @@ best when the text represents one clear idea or topic.
 If you embed very large text:
 multiple topics mix together and semantic meaning becomes blurred.
 4.Faster processing ,speeds up the embedding creation
+
+//Three types of text splitting method:
+a.character-based splitting
+b.Token based splitting
+c.Semantic bases splitting
