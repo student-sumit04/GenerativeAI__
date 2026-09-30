@@ -1,23 +1,44 @@
 #for more use langchain docs
 
-from tempfile import template
+import os
+from pathlib import Path
+from types import SimpleNamespace
 
 from langchain_mistralai import ChatMistralAI
 
-from langchain_community.document_loaders import TextLoader
-from langchain_core.prompts import ChatPromptTemplate
 
-data=TextLoader("document loaders/notes.txt")
-docs=data.load()
+class TextLoader:
+    """Minimal text loader compatible with the document splitter."""
 
-ChatPromptTemplate.from_message(
-    [("")
+    def __init__(self, file_path):
+        self.file_path = Path(file_path)
 
-    ]
+    def load(self):
+        return [
+            SimpleNamespace(
+                page_content=self.file_path.read_text(encoding="utf-8"),
+                metadata={"source": str(self.file_path)},
+            )
+        ]
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+
+splitter = RecursiveCharacterTextSplitter(
+    chunk_size=10,
+    chunk_overlap=1,
 )
-model=ChatMistralAI(model="mistral-small-2506")
-prompt=template.format_message(data=docs[0].page_content)
-result =model.invoke(prompt)
 
-print (result.content)#metadata and page content
+data = TextLoader(Path(__file__).with_name("notes.txt"))
+docs = data.load()
+chunks = splitter.split_documents(docs)
+
+if os.getenv("MISTRAL_API_KEY"):
+    model = ChatMistralAI(model="mistral-small-2506")
+    result = model.invoke(docs[0].page_content)
+    print(result.content)
+else:
+    print(f"Loaded {len(docs)} document and created {len(chunks)} chunks.")
+
+#text splitter follows recursively first ,double line break ,then single line braeak
+#spaces and then chunks size
 
