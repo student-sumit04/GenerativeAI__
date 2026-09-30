@@ -21,7 +21,5 @@ chunks=splitter.split_documents(docs)
 
 model=ChatMistralAI(model="zai-glm-5-2")
 
-prompt=template.format_message(data=docs[0].page_content)
-result =model.invoke(prompt)
-print(result.content)
+
 
