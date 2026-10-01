@@ -1,0 +1,32 @@
+A retriever takes a user query and return s the most likely relevant documents or chunks from a database.
+NOw there are 2 types of retrievers:
+1. By data source: These retrievers are designed to work with specific types of data sources, such as text documents, images, or structured databases. They use algorithms tailored to the characteristics of the data source to retrieve relevant information.
+2. By retrieval method: These retrievers use different methods to retrieve relevant information, such as similarity ,MMR, multiquery etc.
+
+
+
+
+By data source, these retrievers can connect to the api of the data source and retrieve relevant information based on the user's query. For example, a text document retriever may use natural language processing techniques to analyze the content of the documents and return the most relevant ones.
+
+Search strategies:
+IN most RAG systems, retrievers use three core retrieval
+strategies . THese are ones you will most often see
+1 . SImilarity search
+2.MMR(Maximum Marginal Relevance)
+3.Multiquery retrieval
+
+1.Similarity search:
+The system compares teh query vector with document vectores using similarity metrics
+>cosine similarity
+>DOt product
+>Euclidean distance
+The retriever finds the top k documents that are most similar.
+
+2.MMR:
+Maximum Marginal Relevance is a technique that balances the relevance of documents with their diversity. It ensures that the retrieved documents are not only relevant to the query but also different from each other, providing a more varied set of results.
+Lets understand with a example: Suppose a user queries "best programming languages for web development." A similarity search might return multiple documents that all discuss JavaScript, while an MMR approach would return documents discussing JavaScript, Python, and Ruby, providing a more diverse set of relevant information.
+
+
+3. Multiquery retrieval:
+Multiquery retrieval involves generating multiple queries from the original user query to capture different aspects or interpretations of the query. 
+This can help in retrieving a broader range of relevant documents. For example, if the user query is "climate change effects," multiquery retrieval might generate additional queries like "global warming impacts," "environmental changes due to climate," and "climate change consequences," allowing the retriever to access a wider array of documents related to the topic.
