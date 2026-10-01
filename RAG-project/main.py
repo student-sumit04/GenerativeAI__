@@ -31,7 +31,7 @@ vectorstore = Chroma.from_documents(
 )
 
 retriever = vectorstore.as_retriever(search_kwargs={"k": 4})
-
+#prompt template for RAG chain
 prompt = ChatPromptTemplate.from_messages(
     [
         (
