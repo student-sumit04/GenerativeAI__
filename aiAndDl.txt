@@ -1,0 +1,103 @@
+ai learns from the data that is given to it;
+
+#neural network:
+there is a input layer,hidden layer and output layer in this.
+forward propagation and backward propagation , activation function 
+
+
+#LLM
+LLM are deep learning models trained on large data.LLM 
+
+#Tokens;
+The process of converting the content to tokens is called tokenization.
+A token is the basic unit of text—ranging from a fraction of a word to a full word or punctuation mark—that a large language model (LLM) processes.
+
+
+#context window:
+Limit of the LLM and is measured in form of tokens.
+THe context window is temporary .
+
+#vector
+Every token is converted into numerical value for the llm to feed inside ,
+using the vector, and the process is called vectorization.
+Embedding 
+
+#Attention
+Key vector and query vector , we take the dot product 
+
+#Transformer
+It is based on the attention mechanism.
+LLM used the tranformer architecture
+
+diagram of the transformer :
+
+attetnion blovk->FNN->operation-->attetion block->fnn->o/p-->multiple times
+
+alternative to the transformers:>state space model(SSM)
+#Fine tuning
+we start with the base model and train on the specialises dataset  and then we get the fine tuned model
+for example for the medical field and the other fields.
+
+
+#self supervised learning:
+Self-supervised learning (SSL) is a machine learning method where an AI model teaches itself by creating its own training labels from raw, unlabeled data
+Data can be labeled and unlabelled.
+
+
+#Reinforcement learning:
+Reinforcement learning is a type of machine learning where an AI program learns to make decisions through trial and error to get the best total reward.
+If the model does the wrong decision then a penalty is imposed on it.But the goal is to maximise the reward.
+
+#Retrieval Augmented Generation(RAG)
+ is a technique that improves large language models (LLMs) by letting them look up facts from outside sources before they answer.
+
+
+ #vector database:
+ query ->llm (vector db contains the embedding and can do the sematic search)->response
+
+ chunks to the vector embedding
+ eg:PInecone ,chroma
+
+ #Few short prompting
+ WHen we give the prompt to the LLM with some example then it is called few shot prompting
+
+ #MOdel context Protocol:
+ Model Context Protocol (MCP) is an open standard that acts like a universal adapter, letting Large Language Models (LLMs) securely connect to external data sources, applications, and tools.
+
+ query->mcp client- >LLM ->Response and for the data llm
+ ask the mcp client to connect with the mcp server
+
+
+ #context engineering:
+ RAG, Few shot prompting ,MCP , user preferences,conversation history
+, instructions,context summarization
+
+#Multi modal model:
+DIfferent forms of data:(text,images,videos,audioes etc..),llm can generate text,video , images , audios etc.
+
+#AI Agent 
+An AI agent built on a large language model (LLM) is an autonomous software system that uses an LLM as its reasoning core to plan, make decisions, and execute multi-step tasks rather than just generating a single text response.
+goals-> system ->excute tasks,system ->Brain but with the help of the llm 
+
+#chain of thought:
+Chain of thought (CoT) is a prompt engineering and AI reasoning technique that guides a large language model (LLM) to solve complex problems through step-by-step intermediate logical reasoning rather than jumping straight to a final answer.
+
+
+#Reasoning model
+A reasoning model (also called a thinking model or large reasoning model) is a Large Language Model fine-tuned to solve multi-step problems by generating hidden or visible intermediate "thinking traces" before giving a final answer. 
+
+eg: deepseek ,chatgpt
+
+Chain of thought , tree of thought, graph of thought
+
+#Small language model:
+They have smaller number of parameters ,eg: legal, medical, finance
+A small language model (SLM) is a compact artificial intelligence text tool that uses far fewer parameters and less training data than a massive large language model (LLM).
+
+#DIstillation:
+LLM distillation is a training method that transfers knowledge from a large, complex model (the "teacher") to a smaller, faster model (the "student") so the smaller model performs similarly while using fewer computing resources
+
+#Quantization:
+Quantization in large language models (LLMs) is a compression technique that reduces the memory and computing power needed to run a model by converting its high-precision numbers into lower-precision formats.
+
+
