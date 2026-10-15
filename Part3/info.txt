@@ -1,0 +1,210 @@
+#runnables
+concept of chaining
+langchain made an important decision.
+instead of predefined chains and introduced a much more
+flexible system.. Runnables.
+In LangChain, a Runnable is a fundamental building block that represents a single task or operation, and it’s the core of the Lang Chain Expression Language (LCEL). Runnables are designed to be composable, meaning you can chain them together to create complex workflows or pipelines.
+
+Runnable is an object that can take an input and produce an output. Many LangChain components, such as:
+
+Language Models (LLMs): Like OpenAI’s GPT models or Google’s Gemini.
+Prompt Templates: For formatting user input into a suitable prompt for an LLM.
+Output Parsers: For extracting structured information from an LLM’s response.
+Retrievers: For fetching relevant documents from a knowledge base.
+Tools: Functions or APIs that an agent can use.
+They are at the heart of the LangChain Expression Language (LCEL), which allows for declarative and optimized construction of these workflows.
+
+RunnableSequence in LangChain
+A RunnableSequence is a way to run multiple steps in order, one after another—like a pipeline.
+
+Each step in the sequence takes the output from the previous step as input.
+
+llm = ChatOpenAI(temperature=0)
+
+prompt1 = PromptTemplate.from_template(
+  'Explain in short about {country}'
+)
+prompt2 = PromptTemplate.from_template(
+  'Tell me a joke about the {text}.'
+)
+
+# Output parser
+parser = StrOutputParser()
+
+# Chain: prompt1 → llm → parser → prompt2 → llm → parser
+chain = RunnableSequence(
+        prompt1,
+        llm,
+        parser,
+        prompt2,
+        llm,
+        parser
+    
+)
+
+# Invoke
+result = chain.invoke({"country": "NewZealand"})
+print(result)
+RunnableParallel in LangChain
+RunnableParallel lets you run multiple tasks at the same time and get all their results together.
+It’s useful when you want to ask the LLM or tools multiple things at once.
+
+
+llm_summary = ChatOpenAI(temperature=0)
+llm_quiz = ChatOpenAI(temperature=0.9)
+
+parser = StrOutputParser()
+
+summary_prompt = PromptTemplate.from_template(
+    "Give a short and clear summary about {country}."
+)
+summary_chain = summary_prompt | llm_summary | parser
+
+quiz_prompt = PromptTemplate.from_template(
+    "Generate 5 interesting quiz questions based on {country}."
+)
+quiz_chain = quiz_prompt | llm_quiz | parser
+
+parallel_chain = RunnableParallel({
+    "summary": summary_chain,
+    "quiz": quiz_chain
+})
+
+result = parallel_chain.invoke({"country": "Australia"})
+
+# Print the output nicely
+print("📄 Summary:\n", result["summary"])
+print("\n🧠 Quiz Questions:\n", result["quiz"])
+RunnablePassthrough in LangChain
+RunnablePassthrough is the simplest runnable that just returns the input as-is, without doing anything to it.
+
+from langchain_core.runnables import RunnablePassthrough
+
+passthrough = RunnablePassthrough()
+
+output = passthrough.invoke({"message": "Hello from LangChain!"})
+print(output)
+In a RunnableSequence, the input flows step-by-step, where the output of one component becomes the input to the next. For example, if we start with a country input, the first prompt generates some text (e.g., a summary), and that output is then passed into the next prompt (e.g., to create a joke or quiz).
+
+However, there are scenarios where you may want to preserve the original input or inspect both the original input and intermediate output. This is where RunnablePassthrough becomes useful.
+
+By using RunnablePassthrough, you can fork or capture data at specific points in the pipeline without altering it. This allows you to run multiple chains in parallel or access both input and intermediate values—for example, comparing the input prompt with the final result, or evaluating different outputs side by side.
+
+
+llm = ChatOpenAI(temperature=0)
+
+# Output parser
+parser = StrOutputParser()
+
+# Summary Chain
+summary_prompt = PromptTemplate.from_template(
+    "Give a short and clear summary about {country}."
+)
+summary_chain = summary_prompt | llm | parser
+
+# Quiz Chain
+quiz_prompt = PromptTemplate.from_template(
+    "Generate 5 interesting quiz questions based on  the {text}."
+)
+
+passthrough = RunnablePassthrough()
+
+
+# Parallel Execution Chain
+parallel_chain = RunnableParallel({
+    "summary": summary_chain,
+    "quiz": passthrough
+})
+
+combined_chain = RunnableSequence(summary_chain,parallel_chain)
+
+# Run the chain
+result = combined_chain.invoke({"country": "Australia"})
+
+# Print the output nicely
+print("📄 Summary:\n", result["summary"])
+print("\n🧠 Quiz Questions:\n", result["quiz"])
+RunnableLambda in LangChain
+RunnableLambda is a way to wrap a simple Python function as a runnable step in a LangChain pipeline.
+
+LangChain runnables: one chain generates text (like a summary or context), and the next computes something from that text (like word count), using a Python function wrapped with RunnableLambda.
+
+Use Case: Two-Stage Runnable Chain
+1️⃣ First chain: Generate a context/summary from input (e.g., country name)
+2️⃣ Second chain: Count how many words are in the generated response
+
+Use Case: Two-Stage Runnable Chain
+1️⃣ First chain: Generate a context/summary from input (e.g., country name)
+2️⃣ Second chain: Count how many words are in the generated response
+
+from langchain_core.runnables import RunnableLambda, RunnableSequence
+from langchain.prompts import PromptTemplate
+from langchain.chat_models import ChatOpenAI
+from langchain_core.output_parsers import StrOutputParser
+
+# ---- 1. Word Count Function ----
+def count_words(text: str) -> int:
+    words = text.strip().split()
+    return len(words)
+
+# ---- 2. RunnableLambda for Word Count ----
+word_counter = RunnableLambda(lambda x: {"summary": x, "word_count": count_words(x)})
+
+# ---- 3. LLM and Output Parser ----
+llm = ChatOpenAI(temperature=0)
+parser = StrOutputParser()
+
+# ---- 4. Prompt for Summary ----
+summary_prompt = PromptTemplate.from_template(
+    "Give a short and clear summary about {country}."
+)
+
+# ---- 5. Chain: Prompt → LLM → Parse → Word Count ----
+full_chain = (
+    summary_prompt
+    | llm
+    | parser
+    | word_counter
+)
+
+# ---- 6. Invoke the chain ----
+result = full_chain.invoke({"country": "Brazil"})
+
+# ---- 7. Output ----
+print("📄 Summary:\n", result["summary"])
+print("🔢 Word Count:\n", result["word_count"])
+RunnableBranch in LangChain
+RunnableBranch lets you conditionally choose between multiple runnable chains based on the input.
+
+RunnableBranch is like an if-elif-else chain that picks which path (chain or function) to run based on the input.
+
+from langchain_core.runnables import RunnableBranch, RunnableLambda
+from langchain.prompts import PromptTemplate
+from langchain.chat_models import ChatOpenAI
+from langchain_core.output_parsers import StrOutputParser
+
+llm = ChatOpenAI(temperature=0)
+parser = StrOutputParser()
+
+# HR Chain
+hr_prompt = PromptTemplate.from_template("Explain the onboarding process for HR.")
+hr_chain = hr_prompt | llm | parser
+
+# Finance Chain
+finance_prompt = PromptTemplate.from_template("What are the financial reporting duties?")
+finance_chain = finance_prompt | llm | parser
+
+# Default Chain
+default_chain = RunnableLambda(lambda _: "Sorry, no info available for this role.")
+
+# Branch logic
+branch_chain = RunnableBranch(
+    (lambda x: x.get("role") == "HR", hr_chain),
+    (lambda x: x.get("role") == "Finance", finance_chain),
+    default_chain  # fallback if none match
+)
+
+# Run examples
+print("🧑‍💼 HR Output:\n", branch_chain.invoke({"role": "HR"}))
+print("\n💰 Finance Output:\n", branch_chain.invoke({"role": "Finance"}))
+print("\n🤷 Unknown Role Output:\n", branch_chain.invoke({"role": "Marketing"}))
